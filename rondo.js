@@ -10,7 +10,7 @@ var remote = true;
 
 //other variables - none of these necessarily need to be changed
 var itemsTable;
-var homeQuery = "home";
+var homeQuery;
 var openPage;
 var header = document.title;
 var subhead;
@@ -303,22 +303,26 @@ function siteConfig (siteJsonData) {
 
 //function to build pages
 function pages(pagesJsonData) {
-  var pagesData = pagesJsonData.rows;
-  var pagesCount = pagesData.length;
+    var pagesData = pagesJsonData.rows;
+    var pagesCount = pagesData.length;
 
-  //Variables needed in loop
-  var pageTitle
-  var pageText
-  var pageQuery
-
-  homeQuery = pagesData[0].c['2'].v;
+    //Variables needed in loop
+    var pageTitle
+    var pageText
+    var pageQuery="";
+    if (pagesData[0].c['2']) {
+      homeQuery = pagesData[0].c['2'].v;
+    }
   //loop through pages
   pagesData.forEach((page, i) =>
   {
     //write data for each page to variables
     pageTitle = page.c['0'].v;
     pageText = page.c['1'].v;
-    pageQuery = page.c['2'].v;
+    //pageQuery is not required - if no query, show all items
+    if (pageQuery = page.c['2']) {
+      pageQuery = page.c['2'].v;
+    }
     pageSlug = page.c['3'].v;
     subPage = page.c['4'].v;
 
@@ -430,8 +434,7 @@ function pages(pagesJsonData) {
     var firstPageHead = $('#pages-container article:nth-child(1) h2').text();
     $('.items-head').text(firstPageHead + ' - Related Items');
   };
-}
-
+};
 //function to build the datatable of items
 function itemsDataTable(itemsJsonData) {
     var initialSearch = {"columns": [0,1,2,3,4,7,10,11,12,13,14,15,16,17]};
@@ -440,7 +443,11 @@ function itemsDataTable(itemsJsonData) {
       if (thisPageQuery) {
           initialSearch = {"preDefined": { "criteria": [ { "condition": "contains", "data": "Keywords", "type": "string", "value": [ thisPageQuery ] } ], "logic": "AND" }, "columns": [0,1,2,3,4,7,10,11,12,13,14,15,16,17]};
     }
+  }
+  else if (homeQuery) {
+    initialSearch = {"preDefined": { "criteria": [ { "condition": "contains", "data": "Keywords", "type": "string", "value": [ homeQuery ] } ], "logic": "AND" }, "columns": [0,1,2,3,4,7,10,11,12,13,14,15,16,17]};
   };
+
     //create datatable from sheet data
     itemsTable = $('#items').DataTable({
       data: itemsJsonData.rows,
