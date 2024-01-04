@@ -31,12 +31,22 @@ $(document).ready(function() {
 
   //basic modal interactions
 
-  $('dialog a.close').on('click', function(){$('.item-modal, .rondo-tools').removeAttr('open');});
+  $('dialog a.close').on('click', function(){
+    $('.item-modal, .rondo-tools').removeAttr('open');
+  });
   // Close with Esc key
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
       $('.item-modal, .rondo-tools').removeAttr('open');
     }
+  });
+
+  // Close with a click outside
+  document.addEventListener("click", (event) => {
+    //when clicking outside the modal, the target is the modal. Otherwise the target is a child of the modal - this method doesn't result in bubbling up, so it only closes on a click outside
+    if ($(event.target).is('dialog')) {
+        $('.item-modal, .rondo-tools').removeAttr('open');
+      }
   });
 
   //if the site is set to run remote, go to Google Sheets - if not, run locally from the json folder
@@ -165,7 +175,7 @@ function pageChange() {
   );
   //update the URL query
   window.history.pushState(null, null, '?page='+slug);
-};
+}
 //function to change page by index number - called when using next and previous buttons on articles. largely the same as the function above, but we need to get the information differently
 function pageChangeIndex() {
   //get the target from the clicked button, but then get the other information from the targetted page
@@ -196,7 +206,6 @@ function pageChangeIndex() {
 //This section may need to be changed when adding custom metadata fields
 function modalBuild(rowData) {
   //change the modal title
-  console.log(rowData);
   var thisTitle;
   if (rowData.c[0]) {
     thisTitle = rowData.c[0].v;
@@ -285,6 +294,11 @@ function siteConfig (siteJsonData) {
   //set the page header
   $('h1#head').text(header);
   $('h2#subhead').text(subhead);
+  //make the header group go to home by reloading the page with no queries
+  $('hgroup').on('click', function() {
+    window.location = window.location.href.split("?")[0];
+  });
+
   //set the hero image
   var heroItem='';
   if (siteConfigData[0].c['4']) {
@@ -317,14 +331,39 @@ function pages(pagesJsonData) {
   pagesData.forEach((page, i) =>
   {
     //write data for each page to variables
-    pageTitle = page.c['0'].v;
-    pageText = page.c['1'].v;
+    if (page.c['0']){
+      pageTitle = page.c['0'].v;
+    }
+    else {
+      pageTitle = "Page "+i
+    }
+    //for page text, replace curly quotes with straight to avoid issues in HTML
+    if (page.c['1']) {
+      pageText = page.c['1'].v.replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"');
+    }
+    else {
+      pageText = "";
+      console.log("The page "+pageTitle+" does not have any text");
+    }
     //pageQuery is not required - if no query, show all items
     if (pageQuery = page.c['2']) {
       pageQuery = page.c['2'].v;
     }
-    pageSlug = page.c['3'].v;
-    subPage = page.c['4'].v;
+    else {
+      pageQuery="";
+    }
+    if (page.c[3]) {
+      pageSlug = page.c['3'].v;
+    }
+    else {
+      pageSlug ="page-"+i
+    }
+    if (page.c['4']) {
+      subPage = page.c['4'].v;
+    }
+    else {
+      subPage = false;
+    }
 
     //Create pages menu
     var li = $('<li>')
@@ -417,18 +456,21 @@ function pages(pagesJsonData) {
   $('ul.subpage-menu:empty').remove();
 
   if (openPage) {
-      $('#pages-container article').hide();
-      $('article.'+ openPage).show();
-      var articleTitle = $('article.'+ openPage +' h2').text();
-      $('.items-head').text(articleTitle + ' - Related Items');
-      $('article.'+ openPage +' h2').trigger('focus');
-      document.title= articleTitle + " - " + header;
-      $('body').animate(
-        {
-          scrollTop: $('article.' + openPage).offset().top,
-        },
-        800 //speed
-      );
+      //check if the page exists before trying to open it - if not just go to the homepage
+      if ($('article.' + openPage).length>0) {
+        $('#pages-container article').hide();
+        $('article.'+ openPage).show();
+        var articleTitle = $('article.'+ openPage +' h2').text();
+        $('.items-head').text(articleTitle + ' - Related Items');
+        $('article.'+ openPage +' h2').trigger('focus');
+        document.title= articleTitle + " - " + header;
+        $('body').animate(
+          {
+            scrollTop: $('article.' + openPage).offset().top,
+          },
+          800 //speed
+        );
+    }
   }
   else {
     var firstPageHead = $('#pages-container article:nth-child(1) h2').text();

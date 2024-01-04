@@ -6,6 +6,26 @@ body main {
   padding-top: 0px;
 }
 
+kbd {
+  background-color: transparent;
+  color:inherit;
+}
+
+.center {
+  text-align: center;
+}
+
+.diagram {
+  margin: auto;
+}
+
+@media (max-width: 991px){
+  .diagram {
+    transform: rotate(90deg);
+    margin:30px auto;
+  }
+}
+
 header.top {
   display:flex;
 }
@@ -14,9 +34,9 @@ header.top nav {
   margin-left: auto;
 }
 
-/*ul#pages {
-  flex-direction: row;
-}*/
+ul#pages {
+  left:auto;
+}
 
 .subpage-menu {
   display: block;
