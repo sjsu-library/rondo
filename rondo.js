@@ -13,7 +13,7 @@ var itemsTable;
 var homeQuery;
 var openPage;
 var header = document.title;
-var subhead;
+var subhead = "";
 
 
 //function that runs when the page loads
@@ -285,8 +285,15 @@ function siteConfig (siteJsonData) {
   var siteConfigData = siteJsonData.rows;
 
   //assign the site title and subtitle - it is advised but not required to also set these in the HTML
-  header = siteConfigData[0].c['0'].v;
-  subhead = siteConfigData[0].c['1'].v;
+  if (siteConfigData[0].c['0']) {
+    header = siteConfigData[0].c['0'].v;
+  };
+  if (siteConfigData[0].c['1']) {
+    subhead = siteConfigData[0].c['1'].v;
+  };
+  if (siteConfigData[0].c['10']) {
+    var headerImage = siteConfigData[0].c['10'].v;
+  }
   //if this is the homepage, set the document title here - again, it is advised to also set this in the HTML
   if (!openPage) {
     document.title = header;
@@ -294,10 +301,15 @@ function siteConfig (siteJsonData) {
   //set the page header
   $('h1#head').text(header);
   $('h2#subhead').text(subhead);
+  if (headerImage) {
+    $('hgroup').prepend('<img class="header-image" src="'+headerImage+'">')
+    $('#head').hide();
+  }
   //make the header group go to home by reloading the page with no queries
   $('hgroup').on('click', function() {
     window.location = window.location.href.split("?")[0];
   });
+
 
   //set the hero image
   var heroItem='';

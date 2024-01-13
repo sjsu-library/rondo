@@ -28,6 +28,11 @@ kbd {
 
 header.top {
   display:flex;
+  align-items: self-start;
+}
+
+.header-image {
+  max-width: 50%;
 }
 
 header.top nav {
