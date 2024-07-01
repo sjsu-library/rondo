@@ -15,13 +15,31 @@ var openPage;
 var header = document.title;
 var subhead = "";
 
+//select markdown or HTML for page formatting
+var markdown = true;
+const md = markdownit({
+  html: true,
+  linkify: true,
+  typographer: true
+});
+
 
 //function that runs when the page loads
 //Consists of three nested calls to the Google Sheets Visualization API - first for site settings/configuration, then for pages, and last for items.
 $(document).ready(function() {
 
+
+
   //get the current from the URL -written to the variable openPage
   getQueries();
+
+  //add a listener to capture the back and forward buttons in the browser
+  window.addEventListener('popstate', () => {
+
+    getQueries();
+    openPageFromQuery()
+
+  });
 
   //make the Rondo Tools link open the tools modal
   $('.tools').on('click',function(event) {
@@ -167,6 +185,7 @@ function pageChange() {
   $('details').removeAttr('open');
   document.title = articleTitle + " - "+header
   $('article.' + slug + ' h2').trigger('focus');
+  $('figure.hero').hide();
   $('body').animate(
     {
       scrollTop: $('article.' + slug).offset().top,
@@ -193,6 +212,7 @@ function pageChangeIndex() {
   $('details').removeAttr('open');
   document.title = articleTitle + " - "+header
   $('article.' + slug + ' h2').trigger('focus');
+  $('figure.hero').hide();
   $('body').animate(
     {
       scrollTop: $('article.' + slug).offset().top,
@@ -294,9 +314,11 @@ function siteConfig (siteJsonData) {
   if (siteConfigData[0].c['10']) {
     var headerImage = siteConfigData[0].c['10'].v;
   }
-  //if this is the homepage, set the document title here - again, it is advised to also set this in the HTML
+  //if this is the homepage, set the document title here - again, it is advised to also set this in the HTML. Also, show the hero image
   if (!openPage) {
     document.title = header;
+    $('figure.hero').show();
+
   };
   //set the page header
   $('h1#head').text(header);
@@ -306,7 +328,7 @@ function siteConfig (siteJsonData) {
     $('#head').hide();
   }
   //make the header group go to home by reloading the page with no queries
-  $('hgroup').on('click', function() {
+  $('hgroup *').on('click', function() {
     window.location = window.location.href.split("?")[0];
   });
 
@@ -352,6 +374,9 @@ function pages(pagesJsonData) {
     //for page text, replace curly quotes with straight to avoid issues in HTML
     if (page.c['1']) {
       pageText = page.c['1'].v.replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"');
+      if (markdown) {
+        pageText=md.render(pageText);
+      };
     }
     else {
       pageText = "";
@@ -376,9 +401,16 @@ function pages(pagesJsonData) {
     else {
       subPage = false;
     }
+    if (page.c['5']) {
+      parent = page.c['5'].v;
+    }
+    else {
+      parent = "";
+    }
 
     //Create pages menu
     var li = $('<li>')
+      .addClass('menu-'+pageSlug)
 
     var a = $('<a>')
       .text(pageTitle)
@@ -390,19 +422,27 @@ function pages(pagesJsonData) {
       .appendTo(li)
       .on( "click", function() {pageChange()});
 
+    console.log(parent);
     if (!subPage) {
       $(li).addClass('parent')
       var ul = $('<ul>')
         .addClass('subpage-menu')
+        .addClass('submenu-'+pageSlug)
         .appendTo(li);
         $(li).appendTo('ul#pages');
     }
     else {
-      var parentTitle = $('ul#pages li.parent:last-child').find('a').attr('pageTitle');
-      var parentSlug = $('ul#pages li.parent:last-child').find('a').attr('pageSlug');
-      var parentQuery = $('ul#pages li.parent:last-child').find('a').attr('pageQuery');
+      var parentTitle = $('ul#pages li.menu-'+parent).find('a').attr('pageTitle');
+      //var parentSlug = $('ul#pages li.parent:last-child').find('a').attr('pageSlug');
+      var parentSlug = parent;
+      var parentQuery = $('ul#pages li.menu-'+parent).find('a').attr('pageQuery');
       $(li).find('a').attr('parentTitle', parentTitle);
-      $(li).appendTo('ul#pages li:last-child ul');
+      var ul = $('<ul>')
+        .addClass('subpage-menu')
+        .addClass('submenu-'+pageSlug)
+        .appendTo(li);
+      console.log(subPage);
+      $(li).appendTo('ul#pages li.menu-'+parent+' ul.submenu-'+parent);
     }
 
 
@@ -467,6 +507,11 @@ function pages(pagesJsonData) {
   //remove empty ul elements from Menu
   $('ul.subpage-menu:empty').remove();
 
+  openPageFromQuery();
+
+};
+//function to open page from query - runs at the end of building pages and also whenever the back or forward buttons are used in the browser
+function openPageFromQuery() {
   if (openPage) {
       //check if the page exists before trying to open it - if not just go to the homepage
       if ($('article.' + openPage).length>0) {
@@ -482,13 +527,16 @@ function pages(pagesJsonData) {
           },
           800 //speed
         );
+        $('figure.hero').hide();
     }
   }
   else {
     var firstPageHead = $('#pages-container article:nth-child(1) h2').text();
     $('.items-head').text(firstPageHead + ' - Related Items');
+    $('figure.hero').show();
   };
-};
+}
+
 //function to build the datatable of items
 function itemsDataTable(itemsJsonData) {
     var initialSearch = {"columns": [0,1,2,3,4,7,10,11,12,13,14,15,16,17]};

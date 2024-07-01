@@ -1,3 +1,7 @@
+body {
+  padding-top:100px;
+}
+
 body header {
   padding-bottom: 0px;
 }
@@ -5,6 +9,7 @@ body header {
 body main {
   padding-top: 0px;
 }
+
 
 kbd {
   background-color: transparent;
@@ -19,25 +24,52 @@ kbd {
   margin: auto;
 }
 
+article {
+}
+
+#pages-container article header {
+  padding-top:120px;
+}
+
 @media (max-width: 991px){
   .diagram {
     transform: rotate(90deg);
     margin:30px auto;
   }
 }
+header.top-header {
+  position: fixed;
+  top:0;
+  background-color: #fff;
+  padding-top:10px;
+  padding-bottom: 10px;
+  -webkit-box-shadow: 0px 4px 16px 8px rgba(0,0,0,0.1);
+  -moz-box-shadow: 0px 4px 16px 8px rgba(0,0,0,0.1);
+  box-shadow: 0px 4px 16px 8px rgba(0,0,0,0.1);
+}
 
-header.top {
+div.top {
   display:flex;
-  align-items: self-start;
+  align-items: center;
+  justify-content: space-between;
+  height: 90px;
+}
+hgroup {
+  margin-bottom: 0;
+}
+hgroup *, .include-item, #collection tr {
+  cursor: pointer;
 }
 
 .header-image {
   max-width: 50%;
+  max-height: 80px;
 }
 
 header.top nav {
   margin-left: auto;
 }
+
 
 ul#pages {
   left:auto;
@@ -49,6 +81,9 @@ ul#pages {
 
 .subpage-menu li {
   display: block;
+}
+figure.hero {
+  display:none;
 }
 
 .hero figcaption {
@@ -104,7 +139,6 @@ button.next-page {
   margin: 0.5%;
   width:99%;
 }
-
 
 #items thead {
   display:none;
