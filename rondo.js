@@ -335,10 +335,14 @@ function siteConfig (siteJsonData) {
 
   //set the hero image
   var heroItem='';
+  var caption='';
   if (siteConfigData[0].c['4']) {
     heroItem=siteConfigData[0].c['4'].v;
   };
-  $('.hero').attr('item', heroItem).html('<img src="' + siteConfigData[0].c['2'].v + '" alt="' + siteConfigData[0].c['3'].v + '"> <figcaption>' + siteConfigData[0].c['3'].v + '</figcaption>');
+  if (siteConfigData[0].c['3']) {
+    caption=siteConfigData[0].c['3'].v;
+  };
+  $('.hero').attr('item', heroItem).html('<img src="' + siteConfigData[0].c['2'].v + '" alt="' + caption + '"> <figcaption>' + caption + '</figcaption>');
 
   //set css variables - for more customization, edit the CSS. Refer to the Pico CSS documentation for guidance
   var r = document.querySelector(':root');
