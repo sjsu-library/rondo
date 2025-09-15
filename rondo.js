@@ -1,8 +1,8 @@
 
 //spreadsheet variables - edit these to point to your spreadsheet
-var spreadsheetID = "2PACX-1vTeswXLLU5fZlV-Omh16j8at0mljAikRgaItcjPQfYzXiot9f-Ahw6B2MUN_MKcZasZAFJSj-DIgJ-8";
-var siteSheet ='814553632';
-var pagesSheet = '82011840';
+var spreadsheetID = "2PACX-1vTR3Tg95Avmgiwzm9xmWNagyTRM9SXZGClZXv3aIwd4xuaXi8i8CMjbz3HKlrvkIAIqfryP9ucRN8Zy";
+var siteSheet ='1569296108';
+var pagesSheet = '28080804';
 var itemsSheet = '0';
 
 // override source variable - used to select a source spreadsheet from the URL
