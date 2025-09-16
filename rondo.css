@@ -83,7 +83,8 @@ ul#pages {
   display: block;
 }
 figure.hero {
-  display:none;
+  display:block
+  ;
 }
 
 .hero figcaption {
