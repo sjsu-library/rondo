@@ -385,28 +385,26 @@
 // })();
 
 
-/* Load site/pages/items from a single Excel file (rondo.xlsx) and render the site. */
+/* Load site/pages/items sheets from a single Excel file (rondo.xlsx) and rendering the site. */
 (function(){
-  // ---- Globals (same names as your old app) ----
+  
   let itemsTable, openPage, header = document.title, subhead = "";
   const markdown = true;
   const md = window.markdownit ? window.markdownit({ html:true, linkify:true, typographer:true }) : null;
 
-  // ---------- Helpers ----------
   function getQueries(){
     const qs = window.location.search; if (!qs) return;
     const p = new URLSearchParams(qs);
     if (p.get('page')) openPage = p.get('page').replace('%20',' ');
   }
 
-  // Caches for Tools modal
 let __SITE_JSON__, __PAGES_JSON__, __ITEMS_JSON__;
 const __blobURLs__ = {};
 
 function pretty(o){ return JSON.stringify(o, null, 2); }
 
 function setDownload($container, key, data, filename){
-  // revoke previous URL to avoid leaks
+  
   if (__blobURLs__[key]) URL.revokeObjectURL(__blobURLs__[key]);
   const url = URL.createObjectURL(new Blob([pretty(data)], {type:'application/json'}));
 
@@ -438,9 +436,8 @@ function updateToolsPanel(){
 }
 
 
-  // Turn a SheetJS sheet into a GViz-like {cols, rows}
+  
   function sheetToGViz(ws){
-    // Use header row
     const aoa = XLSX.utils.sheet_to_json(ws, { header: 1, blankrows: false, defval: null });
     if (!aoa.length) return { cols: [], rows: [] };
     const headers = (aoa[0] || []).map(h => (h ?? '').toString());
@@ -451,7 +448,6 @@ function updateToolsPanel(){
     return { cols, rows };
   }
 
-  // Convert GViz to array of row objects keyed by lower-case labels
   function rowsByLabel(gviz){
     const labels = (gviz.cols||[]).map(c => (c.label||'').toLowerCase().trim());
     return (gviz.rows||[]).map(r=>{
@@ -464,7 +460,7 @@ function updateToolsPanel(){
     return null;
   };
 
-  // ---------- SITE (header, hero, theme) ----------
+  
   function siteConfig(siteJson){
     const row = (siteJson.rows && siteJson.rows[0]) ? siteJson.rows[0].c : null;
     if (!row) return;
@@ -498,12 +494,10 @@ function updateToolsPanel(){
     if (cssFont)  r.style.setProperty('--font-family', cssFont);
   }
 
-  // ---------- PAGES (menu + articles) ----------
   function pages(pagesJson){
     const rows = rowsByLabel(pagesJson);
     const count = rows.length;
 
-    // Build menu
     const $menu = $('ul#pages').empty();
     const $container = $('section#pages-container').empty();
     const idx = new Map();
@@ -533,7 +527,6 @@ function updateToolsPanel(){
       }
     });
 
-    // Articles
     rows.forEach((row, i)=>{
       const title = pick(row,'title') || `Page ${i+1}`;
       let   text  = pick(row,'text')  || '';
@@ -562,11 +555,11 @@ function updateToolsPanel(){
 
       const $footer = $('<footer>');
       if (i>0){
-        $('<button>').text('Previous Page').addClass('previous-page page-nav')
+        $('<button>').text('Prev').addClass('previous-page page-nav')
           .attr('targetpage', i-1).on('click', function(){ pageChangeIndex(); }).appendTo($footer);
       }
       if (i<count-1){
-        $('<button>').text('Next Page').addClass('next-page page-nav')
+        $('<button>').text('Next').addClass('next-page page-nav')
           .attr('targetpage', i+1).on('click', function(){ pageChangeIndex(); }).appendTo($footer);
       }
 
@@ -577,7 +570,6 @@ function updateToolsPanel(){
     openPageFromQuery();
   }
 
-  // ---------- ITEMS (DataTables + modal) ----------
   function modalBuild(row){
     const get = i => row.c[i] ? row.c[i].v : '';
     const title = get(0) || '[Untitled]';
@@ -685,7 +677,6 @@ function updateToolsPanel(){
     });
   }
 
-  // ---------- Navigation / URL / Scroll (fixed-header offset) ----------
   function pageChange(){
     const query =  $(event.target).attr('pagequery');
     const slug = $(event.target).attr('pageslug');
@@ -756,15 +747,14 @@ function updateToolsPanel(){
     const firstHead = $('#pages-container article:nth-child(1) h2').text();
     $('.items-head').text(firstHead + ' - Related Items');
     $('figure.hero').show();
-    $('#intro').removeAttr('hidden');     // if you added an intro card
+    $('#intro').removeAttr('hidden');     // if you added an intro picture
     $('#pages-container article').hide();
 
-    // Clear filters so homepage search works as expected
     if (itemsTable){ itemsTable.search('').searchBuilder.rebuild().draw(); }
   }
 
-  // ---------- Boot: fetch rondo.xlsx and render ----------
-  async function boot(){
+/* Fetches rondo.xlsx file and uses that to render the site. */
+  async function boot() {
     getQueries();
     try{
       const res = await fetch('./rondo.xlsx');
@@ -785,8 +775,6 @@ function updateToolsPanel(){
       __PAGES_JSON__ = pagesJson;
       __ITEMS_JSON__ = itemsJson;
 
-
-      // Optional: dump to your tools panel if you use it
     //   $('.tools-site').text(JSON.stringify(siteJson));
     //   $('.tools-pages').text(JSON.stringify(pagesJson));
     //   $('.tools-items').text(JSON.stringify(itemsJson));
@@ -802,12 +790,10 @@ function updateToolsPanel(){
       pages(pagesJson);
       itemsDataTable(itemsJson);
 
-      // header click → home
       $('hgroup *').off('click').on('click', function(){
         window.location = window.location.href.split("?")[0];
       });
 
-      // dialogs close
       $('dialog a.close').off('click').on('click', function(){ $('.item-modal, .rondo-tools').removeAttr('open'); });
       document.addEventListener("keydown", (e)=>{ if (e.key==="Escape") $('.item-modal, .rondo-tools').removeAttr('open'); });
       document.addEventListener("click", (e)=>{ if ($(e.target).is('dialog')) $('.item-modal, .rondo-tools').removeAttr('open'); });

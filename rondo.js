@@ -149,7 +149,6 @@ $(document).ready(function() {
 //end of document.ready function
 });
 
-//functions called in the script
 
 //function to display the current page - called when page is changed via the menu
 function pageChange() {
