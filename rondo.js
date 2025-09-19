@@ -1,4 +1,4 @@
-//spreadsheet variables - edit these to point to your spreadsheet
+
 var spreadsheetID = "1KhXNef0QJj48RL1NwmSPaNL9nx0aj_pB10EtzeOZy5w";
 var siteSheet ='1569296108';
 var pagesSheet = '28080804';
@@ -8,10 +8,9 @@ var itemsSheet = '0';
 originalID = spreadsheetID; //store the original ID for later checking
 overrideSource = spreadsheetID; //this variable will be overwritten later if there is a source in the URL
 
-//remote variable - change this to run your site on loal json tiles - see Rondo Tools for more information
+
 var remote = true;
 
-//other variables - none of these necessarily need to be changed
 var itemsTable;
 var homeQuery;
 var openPage;
@@ -19,7 +18,6 @@ var header = document.title;
 var subhead = "";
 var queryString;
 
-//select markdown or HTML for page formatting
 var markdown = true;
 const md = markdownit({
   html: true,
@@ -27,7 +25,6 @@ const md = markdownit({
   typographer: true
 });
 
-// --- Helpers: GViz rows keyed by column label + safe getter ---
 function gvizRowsByLabel(gvizJson) {
   const labels = (gvizJson.cols || []).map(c => (c.label || '').toLowerCase().trim());
   const rows = (gvizJson.rows || []).map(r => {
@@ -48,47 +45,36 @@ function pick(obj, ...names) {
 }
 
 //function that runs when the page loads
-//Consists of three nested calls to the Google Sheets Visualization API - first for site settings/configuration, then for pages, and last for items.
 $(document).ready(function() {
 
-  //get the current from the URL -written to the variable openPage
   getQueries();
   
-  //if there is a source specified in the URL, use that instead of the Spreadsheet ID
   spreadsheetID = overrideSource;
-  
-  //add a listener to capture the back and forward buttons in the browser
   window.addEventListener('popstate', () => {
     getQueries();
     openPageFromQuery()
   });
 
-  //make the Rondo Tools link open the tools modal
   $('.tools').on('click',function(event) {
     event.preventDefault();
     $('.rondo-tools').attr('open', '');
   });
 
-  //basic modal interactions
   $('dialog a.close').on('click', function(){
     $('.item-modal, .rondo-tools').removeAttr('open');
   });
-  // Close with Esc key
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
       $('.item-modal, .rondo-tools').removeAttr('open');
     }
   });
-  // Close with a click outside
   document.addEventListener("click", (event) => {
     if ($(event.target).is('dialog')) {
         $('.item-modal, .rondo-tools').removeAttr('open');
       }
   });
 
-  //if the site is set to run remote, go to Google Sheets - if not, run locally from the json folder
   if (remote) {
-    //load data from Google Sheet using Visualization API - this starts the three nested calls
     google.charts.load('current', { packages: ['corechart'] }).then(function () {
 
       // 1) Site config
@@ -132,7 +118,7 @@ $(document).ready(function() {
         });
       });
     });
-  } //end of if remote
+  } 
   else {
     console.log('Running Rondo Local');
     $.getJSON("json/site.json", function(siteJsonData) {
@@ -146,11 +132,8 @@ $(document).ready(function() {
     });
     $('.localizing').empty().html('<h5>Localizing Tools</h5><p>This Rondo site is currently running on local JSON files.');
   }
-//end of document.ready function
 });
 
-
-//function to display the current page - called when page is changed via the menu
 function pageChange() {
   console.log(originalID)
   console.log(overrideSource)
@@ -160,30 +143,25 @@ function pageChange() {
   var articleTitle = $(event.target).attr('pagetitle');
   var type = $(event.target).attr('pagenavtype');
 
-  //hide all of the articles/pages and then show the selected page
   $('#pages-container article').hide();
   $('article.'+slug).show();
   $('#intro').attr('hidden', '');            // HIDE intro on page view
   $('figure.hero').hide();
 
-  //create a storedsearch and use the search builder to select only the relevant items
   var storedSearch = { "criteria": [ { "condition": "contains", "data": "Keywords", "type": "string", "value": [ query ] } ], "logic": "AND" }
   itemsTable.search('').searchBuilder.rebuild(storedSearch).draw();
-  //change the header in the items section, the page title, and scroll to the article header
   $('.items-head').text(articleTitle + ' - Related Items');
   $('details').removeAttr('open');
   document.title = articleTitle + " - "+header
   $('article.' + slug + ' h2').trigger('focus');
   $('figure.hero').hide();
 
-  // FIX: account for fixed header height when scrolling
   var headerH = $('header.top-header').outerHeight() || 0;
   $('html, body').stop(true).animate(
     { scrollTop: $('article.' + slug).offset().top - headerH - 12 },
     800
   );
 
-  //update the URL query
   if (spreadsheetID == originalID) {
     window.history.pushState(null, null, '?page='+slug);
   }
@@ -192,9 +170,7 @@ function pageChange() {
   }
 }
 
-//function to change page by index number - called when using next and previous buttons on articles. largely the same as the function above, but we need to get the information differently
 function pageChangeIndex() {
-  //get the target from the clicked button, but then get the other information from the targetted page
   var target = $(event.target).attr('targetpage');
   var myArticle = $("article[pageindex='" + target + "']");
   var query = myArticle.attr('pagequery');
@@ -213,15 +189,12 @@ function pageChangeIndex() {
   $('#intro').attr('hidden', '');            // HIDE intro on page view
   $('figure.hero').hide();
 
-
-  // FIX: account for fixed header height when scrolling
   var headerH = $('header.top-header').outerHeight() || 0;
   $('html, body').stop(true).animate(
     { scrollTop: $('article.' + slug).offset().top - headerH - 12 },
     800
   );
 
-  //update the URL query
   if (spreadsheetID == originalID) {
     window.history.pushState(null, null, '?page='+slug);
   }
@@ -230,8 +203,6 @@ function pageChangeIndex() {
   }
 };
 
-//function to display item in modal popup - runs when user clicks an item. Rowdata is retrieved from the datatables API, meaning it is stored in the table and retrieved for the row that was clicked.
-//This section may need to be changed when adding custom metadata fields
 function modalBuild(rowData) {
   //change the modal title
   var thisTitle;
@@ -242,7 +213,7 @@ function modalBuild(rowData) {
     thisTitle = '[Untitled]';
   }
   $('h3#modal-title').empty().text(thisTitle);
-  //prep the modal
+  
   $('dd').empty();
   $('dt').show();
   $('.modal-image').empty();
@@ -292,13 +263,10 @@ function modalBuild(rowData) {
   if (rowData.c[6]) {
     $('dd.rowURL').html('<a target="_blank" role="button" href="'+rowData.c[6].v+'">See More</a>');
   };
-  //hide the labels for empty fields
   $('dd:empty').prev().hide();
-  //open the modal - this uses the Pico CSS modal implementation
   $('.item-modal').attr('open', '');
 };
 
-//get queries from URL - variables indicate the current page and allow for an override source spreadsheet
 function getQueries() {
   var queryString = window.location.search;
     if(queryString) {
@@ -312,12 +280,8 @@ function getQueries() {
     }
 };
 
-//function to set up basic site configuration - header, style customizations from spreadsheet
 function siteConfig (siteJsonData) {
-  //siteConfigData contains the usable congiguration data, but we still need to call values by index number. This is why re-ordering the spreadsheet columns will cause issues
   var siteConfigData = siteJsonData.rows;
-
-  //assign the site title and subtitle - it is advised but not required to also set these in the HTML
   if (siteConfigData[0].c['0']) {
     header = siteConfigData[0].c['0'].v;
   };
@@ -327,19 +291,16 @@ function siteConfig (siteJsonData) {
   if (siteConfigData[0].c['10']) {
     var headerImage = siteConfigData[0].c['10'].v;
   }
-  //if this is the homepage, set the document title here - again, it is advised to also set this in the HTML. Also, show the hero image
   if (!openPage) {
     document.title = header;
     $('figure.hero').show();
   };
-  //set the page header
   $('h1#head').text(header);
   $('h2#subhead').text(subhead);
   if (headerImage) {
     $('hgroup').prepend('<img class="header-image" src="'+headerImage+'">')
     $('#head').hide();
   }
-  //make the header group go to home by reloading the page with no page queries
   $('hgroup *').on('click', function() {
     if (spreadsheetID == originalID) {
       window.location = window.location.href.split("?")[0]; 
@@ -350,7 +311,7 @@ function siteConfig (siteJsonData) {
     }
   });
 
-  //set the hero image
+  
   var heroItem='';
   var caption='';
   if (siteConfigData[0].c['4']) {
@@ -370,19 +331,15 @@ function siteConfig (siteJsonData) {
   r.style.setProperty('--font-family', siteConfigData[0].c['9'].v );
 }
 
-// ===== REPLACED: function to build pages (label-aware) =====
 function pages(pagesJsonData) {
-  // Use labels so column order can change
   const { rows } = gvizRowsByLabel(pagesJsonData);
   const pagesCount = rows.length;
 
-  // Set homeQuery from first row "Keywords" (same behavior as before)
   if (pagesCount > 0 && rows[0]) {
     const fq = pick(rows[0], 'keywords');
     if (fq) homeQuery = fq;
   }
 
-  // Build MENU and PAGE ARTICLES as you already do…
   $('ul#pages').empty();
   const $container = $('section#pages-container').empty();
 
@@ -408,7 +365,6 @@ function pages(pagesJsonData) {
     else (menuIndex.get(parent)?.$li.find(`ul.submenu-${parent}`) || $('ul#pages')).append($li);
   });
 
-  // Build PAGE ARTICLES (kept same visual/behavior)
   rows.forEach((row, i) => {
     const title = pick(row, 'title') || `Page ${i+1}`;
     let   text  = pick(row, 'text')  || '';
@@ -442,8 +398,6 @@ function pages(pagesJsonData) {
     $article.append($header).append(text).append($footer).appendTo($container);
   });
 
-  // ----- NEW: Build the HOME INTRO article (from Pages sheet) -----
-  // Pick row with slug "home", else keywords contains "home", else first row with Text
   let introRow = rows.find(r => String(pick(r,'slug')||'').toLowerCase()==='home')
              || rows.find(r => String(pick(r,'keywords')||'').toLowerCase().includes('home'))
              || rows.find(r => !!pick(r,'text'));
@@ -458,14 +412,10 @@ function pages(pagesJsonData) {
       .append(`<header><h2>${introTitle}</h2></header>`)
       .append(introText);
   }
-  // ---------------------------------------------------------------
-
-  // remove empty submenus; then open target or home
   $('ul.subpage-menu:empty').remove();
   openPageFromQuery();
 }
 
-//function to open page from query - runs at the end of building pages and also whenever the back or forward buttons are used in the browser
 function openPageFromQuery() {
   if (openPage) {
       if ($('article.' + openPage).length>0) {
@@ -492,7 +442,6 @@ function openPageFromQuery() {
   };
 }
 
-//function to open the home page
 function homeOpen() {
   var firstPageHead = $('#pages-container article:nth-child(1) h2').text();
   $('.items-head').text(firstPageHead + ' - Related Items');
@@ -504,8 +453,6 @@ function homeOpen() {
     // hide page previews on home
 }
 
-
-//function to build the datatable of items
 function itemsDataTable(itemsJsonData) {
     var initialSearch = {"columns": [0,1,2,3,4,7,10,11,12,13,14,15,16,17]};
     if (openPage) {
@@ -518,7 +465,7 @@ function itemsDataTable(itemsJsonData) {
     //   initialSearch = {"preDefined": { "criteria": [ { "condition": "contains", "data": "Keywords", "type": "string", "value": [ homeQuery ] } ], "logic": "AND" }, "columns": [0,1,2,3,4,7,10,11,12,13,14,15,16,17]};
     // };
 
-    //create datatable from sheet data
+    
     itemsTable = $('#items').DataTable({
       data: itemsJsonData.rows,
       dom: 'fQtipr',
@@ -567,7 +514,6 @@ function itemsDataTable(itemsJsonData) {
       },
       "search": {},
       "drawCallback": function(settings, json) {
-        //after every draw, we need to reasign the modal click to the current set of items
         $('#collection tr').on('click', function(){
           var rowData=itemsTable.row(this).data();
           modalBuild(rowData);
@@ -575,13 +521,11 @@ function itemsDataTable(itemsJsonData) {
       },
       "initComplete": function(settings, json) {
         var table = this.api();
-        //make show all button work
         $('.show-all').on('click', function() {
           table.search('').searchBuilder.rebuild().draw();
           $('.items-head').text('All Items');
         });
 
-        //embed items in pages via <figure class="include-item" item="...">
         var tableData=this.api().rows().data();
         $('#pages-container figure.include-item').each(function( i ) {
           var thisFigure = $(this);
@@ -603,7 +547,6 @@ function itemsDataTable(itemsJsonData) {
           });
         });
 
-        //add modal click to hero figure
         var heroFigure = $('.hero').attr('item');
         if (heroFigure) {
           table.rows().eq( 0 ).each( function (idx) {
