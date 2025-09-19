@@ -1,5 +1,6 @@
 body {
   padding-top:100px;
+  background-color: #F5E1C8;
 }
 
 body header {
@@ -40,7 +41,7 @@ article {
 header.top-header {
   position: fixed;
   top:0;
-  background-color: #EFD1A2;
+  background-color: #E3C9A3;
   padding-top:10px;
   padding-bottom: 10px;
   -webkit-box-shadow: 0px 4px 16px 8px rgba(0,0,0,0.1);
@@ -63,7 +64,7 @@ hgroup *, .include-item, #collection tr {
 
 .header-image {
   max-width: 50%;
-  max-height: 180px;
+  max-height: 280px;
 }
 
 header.top nav {
@@ -155,7 +156,7 @@ button.next-page {
   flex-wrap: wrap;
   margin:1%;
   background-color: #ffffff;
-  border: 1px solid #aaaaaa;
+  border: 1px solid #000000;
   padding: 10px;
   border-radius: 4px;
 }
@@ -182,4 +183,111 @@ button.next-page {
 .dataTables_paginate a, .dataTables_paginate span a{
   padding:20px;
   text-align: center;
+}
+
+/* === Intro section (homepage only) === */
+#intro[hidden] { display: none !important; }
+#intro {
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+}
+#intro #home-article{
+  background: #FFF6EA;
+  border: 1px solid #E2D2B8;
+  border-radius: 16px;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+}
+#intro #home-article header{
+  border-bottom: 1px solid #E2D2B8;
+  padding-bottom: .5rem;
+  margin-bottom: 1rem;
+}
+#intro #home-article h2{
+  margin: 0;
+}
+/* === Page Article Card (scoped to #pages-container) === */
+#pages-container article{
+  background: var(--card, #FFF6EA);
+  border: 1px solid var(--border, #E2D2B8);
+  border-radius: 16px;
+  box-shadow: 0 12px 36px rgba(0,0,0,.12);
+  overflow: hidden; /* create solid header/footer bands */
+  margin: clamp(1rem, 2.5vw, 1.5rem) 0;
+}
+
+/* Header band */
+#pages-container article > header{
+  background: color-mix(in oklab, var(--card, #FFF6EA) 85%, #ffffff);
+  padding: clamp(1.2rem, 3vw, 1.8rem);
+  border-bottom: 1px solid var(--border, #E2D2B8);
+}
+#pages-container article > header h2{
+  margin: 0;
+  font-family: Merriweather, Georgia, serif;
+  color: var(--text, #2A1E14);
+  font-size: clamp(1.25rem, 3.5vw, 2rem);
+}
+
+/* Body area (the content you render from the sheet) */
+#pages-container article > :not(header):not(footer){
+  padding: clamp(1rem, 2.4vw, 1.5rem);
+  background: #fff; /* crisp pane like the screenshot */
+  color: var(--text, #2A1E14);
+  line-height: 1.65;
+}
+#pages-container article p{ margin: .6rem 0; }
+
+/* Footer band with prev/next */
+#pages-container article > footer{
+  background: color-mix(in oklab, var(--card, #FFF6EA) 85%, #ffffff);
+  padding: clamp(1rem, 2.6vw, 1.5rem);
+  border-top: 1px solid var(--border, #E2D2B8);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+#pages-container article > footer .previous-page{ justify-self: start; }
+#pages-container article > footer .next-page{ justify-self: end; }
+
+/* Buttons – reuse your hues, just polish spacing/elevation */
+#pages-container .page-nav{
+  background: var(--primary, #f77c3e);
+  color: #fff;
+  border: 1px solid color-mix(in oklab, var(--primary, #8B4B2A), black 12%);
+  border-radius: 12px;
+  padding: .85rem 1.25rem;
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(0,0,0,.12);
+  transition: transform .12s ease, background .15s ease, box-shadow .15s ease;
+}
+#pages-container .page-nav:hover{
+  background: var(--primary-600, #A65D39);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(0,0,0,.16);
+}
+
+/* Optional: images inside page body look neat */
+#pages-container article img{
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+}
+
+/* Dark mode harmony */
+@media (prefers-color-scheme: dark){
+  #pages-container article{
+    background: var(--card, #302419);
+    border-color: var(--border, #473622);
+  }
+  #pages-container article > header,
+  #pages-container article > footer{
+    background: color-mix(in oklab, var(--card, #302419) 80%, #000);
+    border-color: var(--border, #473622);
+  }
+  #pages-container article > :not(header):not(footer){
+    background: #1f1812;
+    color: var(--text, #F5EDE3);
+  }
 }
