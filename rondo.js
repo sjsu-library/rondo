@@ -1,6 +1,6 @@
 
 //spreadsheet variables - edit these to point to your spreadsheet
-var spreadsheetID = "1iwIx8sqiBTqbtAI7TX4vDGDVee3dPz0wa3MazBv2fzQ";
+var spreadsheetID = "1KhXNef0QJj48RL1NwmSPaNL9nx0aj_pB10EtzeOZy5w";
 var siteSheet ='1569296108';
 var pagesSheet = '28080804';
 var itemsSheet = '0';
@@ -579,16 +579,34 @@ function homeOpen() {
 
 //function to build the datatable of items
 function itemsDataTable(itemsJsonData) {
-    var initialSearch = {"columns": [0,1,2,3,4,7,10,11,12,13,14,15,16,17]};
-    if (openPage) {
-      var thisPageQuery = $('article.'+openPage).attr('pagequery');
-      if (thisPageQuery) {
-          initialSearch = {"preDefined": { "criteria": [ { "condition": "contains", "data": "Keywords", "type": "string", "value": [ thisPageQuery ] } ], "logic": "AND" }, "columns": [0,1,2,3,4,7,10,11,12,13,14,15,16,17]};
-    }
+// Use column index for Keywords (7th column in your config)
+  const KEYWORDS_COL_IDX = 7;
+
+  // Default: just expose which columns SearchBuilder can use
+  let initialSearch = { columns: [0,1,2,3,4,7,10,11,12,13,14,15,16,17] };
+
+  // Decide if we should pre-filter by page/home query
+  let pageQueryString = '';
+  if (openPage) {
+    pageQueryString = $('article.' + openPage).attr('pagequery') || '';
+  } else if (homeQuery) {
+    pageQueryString = homeQuery || '';
   }
-  else if (homeQuery) {
-    initialSearch = {"preDefined": { "criteria": [ { "condition": "contains", "data": "Keywords", "type": "string", "value": [ homeQuery ] } ], "logic": "AND" }, "columns": [0,1,2,3,4,7,10,11,12,13,14,15,16,17]};
-  };
+
+  // If there is a query, split on commas and OR them together
+  if (pageQueryString.trim().length) {
+    const tokens = pageQueryString.split(',').map(s => s.trim()).filter(Boolean);
+    const criteria = tokens.map(token => ({
+      condition: 'contains',
+      dataIdx: KEYWORDS_COL_IDX,   // <-- use index, not label text
+      type: 'string',
+      value: [token]
+    }));
+    initialSearch.preDefined = {
+      criteria,
+      logic: tokens.length > 1 ? 'OR' : 'AND'
+    };
+ } 
 
     //create datatable from sheet data
     itemsTable = $('#items').DataTable({

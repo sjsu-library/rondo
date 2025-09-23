@@ -61,10 +61,16 @@ hgroup *, .include-item, #collection tr {
   cursor: pointer;
 }
 
+/* Keep logo size stable regardless of title/subtitle presence */
 .header-image {
-  max-width: 50%;
-  max-height: 80px;
+  height: 64px;      /* pick a size you like: 56–80px */
+  width: auto;       /* preserve aspect ratio */
+  max-height: 80px;  /* stays within your 90px header */
+  max-width: none;   /* remove the 50% cap */
+  flex: 0 0 auto;    /* don’t let flexbox shrink it */
+  display: block;    /* avoid inline layout quirks */
 }
+
 
 header.top nav {
   margin-left: auto;
