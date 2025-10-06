@@ -397,32 +397,44 @@
   }
 
   function openPageFromQuery() {
-    if (openPage && $('article.' + openPage).length) {
-      $('#pages-container article').hide();
-      $('article.' + openPage).show();
-      const articleTitle = $('article.' + openPage + ' h2').text();
-      $('.items-head').text(articleTitle + ' - Related Items');
-      $('article.' + openPage + ' h2').trigger('focus');
-      document.title = articleTitle + " - " + header;
+  if (openPage && $('article.' + openPage).length) {
+    $('#pages-container article').hide();
+    const $art = $('article.' + openPage).show();
+    const articleTitle = $art.find('h2').text();
+    $('.items-head').text(articleTitle + ' - Related Items');
+    $art.find('h2').trigger('focus');
+    document.title = articleTitle + " - " + header;
 
-      const headerH = $('header.top-header').outerHeight() || 0;
-      $('html, body').stop(true).animate({ scrollTop: $('article.' + openPage).offset().top - headerH - 12 }, 800);
+    const headerH = $('header.top-header').outerHeight() || 0;
+    $('html, body').stop(true).animate({ scrollTop: $art.offset().top - headerH - 12 }, 800);
 
-      $('figure.hero, #intro').hide();
-    } else {
-      homeOpen();
+    $('figure.hero, #intro').hide();
+  } else {
+    homeOpen(); // now shows first article instead of hiding all
     }
   }
 
   function homeOpen() {
-    const firstHead = $('#pages-container article:nth-child(1) h2').text();
-    $('.items-head').text(firstHead + ' - Related Items');
-    $('figure.hero').show();
-    $('#intro').removeAttr('hidden');
-    $('#pages-container article').hide();
+  const $first = $('#pages-container article').first();
+  if (!$first.length) return;
 
-    resetFiltersAndCollapse(undefined);
-  }
+  // show only the first article
+  $('#pages-container article').hide();
+  $first.show();
+
+  // use its keywords to preset the collection
+  const query = $first.attr('pagequery') || undefined;
+  resetFiltersAndCollapse(query);
+
+  // headings & title
+  const firstHead = $first.find('h2').text() || 'Items';
+  $('.items-head').text(firstHead + ' - Related Items');
+  document.title = header;
+
+  // keep your hero/intro visible on the home screen
+  $('figure.hero').show();
+  $('#intro').removeAttr('hidden');
+}
 
   /* Fetches rondo.xlsx file and uses that to render the site. */
   async function boot() {
