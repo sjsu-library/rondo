@@ -323,8 +323,28 @@ function modalBuild(row){
 
   // remove Related Resource row completely
   $('dd.rowRelation').empty().prev('dt').hide().end().hide();
+  if (get(8)) {
+    var extension = get(8).split('.').pop().trim();
+    
+    if (get(8).includes("https://www.youtube.com/watch?v=")){
+      var youTubeID = get(8).split('v=').pop();
+      $('figure.modal-image').html('<iframe width="560" height="315" src="https://www.youtube.com/embed/'+youTubeID+'" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen=""></iframe>')
+    }
+    else if (extension == "png" || "jpg" || "jpeg" || "PNG" || "JPG" || "JPEG" || "webp") {
+      $('figure.modal-image').html('<a href="'+get(8)+'"><img src="'+get(8)+'" alt="'+title+'"/></a>');
+    }
+    else if (extension == "pdf") {
+      $('figure.modal-image').html('<a target="_blank" role="button" href="'+get(8)+'">View PDF</a>');
+    }
+    else {
+      $('figure.modal-image').html('<a target="_blank" role="button" href="'+get(8)+'">Download File</a>');
+    }
+  }
+  else if (get(5)) {
+      $('figure.modal-image').html('<img src="'+get(5)+'" alt="'+title+'"/>');
+  };
 
-  if (imgURL) $('.modal-image').html('<img src="'+imgURL+'" alt="'+title+'" loading="lazy" referrerpolicy="no-referrer">');
+  //if (imgURL) $('.modal-image').html('<img src="'+imgURL+'" alt="'+title+'" loading="lazy" referrerpolicy="no-referrer">');
 
   if (get(1))  $('dd.rowDate').text(get(1));        else $('dd.rowDate').prev().hide().end().hide();
   if (get(2))  $('dd.rowCreator').text(get(2));     else $('dd.rowCreator').prev().hide().end().hide();
