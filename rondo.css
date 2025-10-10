@@ -1,6 +1,6 @@
 body {
   padding-top:100px;
-  background-color: #F5E1C8;
+  /* background-color: #F5E1C8; */
 }
 
 body header {
@@ -42,8 +42,8 @@ header.top-header {
   position: fixed;
   top:0;
   z-index: 1100;
-  
-  background-color: #E3C9A3;
+  /* background-color: #E3C9A3; */
+  background-color: #fff;
   padding-top:10px;
   padding-bottom: 10px;
   -webkit-box-shadow: 0px 4px 16px 8px rgba(0,0,0,0.1);
@@ -66,7 +66,7 @@ hgroup *, .include-item, #collection tr {
 
 .header-image {
   max-width: 50%;
-  max-height: 280px;
+  max-height: 80px;
 }
 
 header.top nav {
@@ -158,7 +158,8 @@ button.next-page {
   flex-wrap: wrap;
   margin:1%;
   background-color: #ffffff;
-  border: 1px solid #000000;
+  /* border: 1px solid #000000; */
+  border: 1px solid #aaaaaa;
   padding: 10px;
   border-radius: 4px;
 }
@@ -208,6 +209,7 @@ button.next-page {
 #intro #home-article h2{
   margin: 0;
 }
+
 /* === Page Article Card (scoped to #pages-container) === */
 #pages-container article{
   background: var(--card, #FFF6EA);
@@ -295,3 +297,5 @@ button.next-page {
 }
 dialog { z-index: 2001; }              /* keep dialog above the fixed header */
 dialog::backdrop { background: rgba(0,0,0,.35); }
+
+
