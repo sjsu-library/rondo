@@ -1,6 +1,6 @@
 /* Load site/pages/items from Google Sheets (gviz) and render site.
    Items list is independent of pages: no auto-filtering by page. */
-var spreadsheetID = "1KhXNef0QJj48RL1NwmSPaNL9nx0aj_pB10EtzeOZy5w";
+var spreadsheetID = "1JwJdUNSWp1ozuQBSamHM7DBnRKx2KDdilKFV5JbUcVQ";
 var siteSheet  = "1569296108";
 var pagesSheet = "28080804";
 var itemsSheet = "0";
@@ -295,7 +295,7 @@ function pages(pagesJsonData) {
 
     const $footer = $('<footer>');
     if (i>0){
-      $('<button>').text('Previous Page').addClass('previous-page page-nav')
+      $('<button>').text('Prev Page').addClass('previous-page page-nav')
         .attr('targetpage', i-1).on('click', function(e){ e.preventDefault(); pageChangeIndex(); }).appendTo($footer);
     }
     if (i<count-1){
