@@ -234,12 +234,13 @@ button.next-page {
 }
 
 /* Body area (the content you render from the sheet) */
-#pages-container article > :not(header):not(footer){
-  padding: clamp(1rem, 2.4vw, 1.5rem);
-  background: #fff; /* crisp pane like the screenshot */
-  color: var(--text, #2A1E14);
-  line-height: 1.65;
-}
+#pages-container article > :not(header):not(footer)
+  /*padding: clamp(1rem, 2.4vw, 1.5rem);
+  background: #fff; /* crisp pane like the screenshot */ */
+  /*color: var(--text, #2A1E14);
+  line-height: 1.65;*/
+
+
 #pages-container article p{ margin: .6rem 0; }
 
 /* Footer band with prev/next */

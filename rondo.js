@@ -1,6 +1,6 @@
 /* Load site/pages/items from Google Sheets (gviz) and render site.
    Items list is independent of pages: no auto-filtering by page. */
-var spreadsheetID = "1JwJdUNSWp1ozuQBSamHM7DBnRKx2KDdilKFV5JbUcVQ";
+var spreadsheetID = "1KhXNef0QJj48RL1NwmSPaNL9nx0aj_pB10EtzeOZy5w";
 var siteSheet  = "1569296108";
 var pagesSheet = "28080804";
 var itemsSheet = "0";
@@ -45,8 +45,10 @@ function getQueries() {
 /* Clear all filters and (optionally) hide the builder panel */
 function clearFilters(collapse) {
   if (!itemsTable) return;
+  /* COMMENTED: list filter reset (list section)
   itemsTable.search('');
   itemsTable.searchBuilder.rebuild().draw();
+  */
   const $sb = $(itemsTable.searchBuilder.container());
   if (collapse) $sb.hide();
 }
@@ -130,9 +132,13 @@ function pageChange() {
   $('figure.hero').hide();
 
   // Items are independent → always show all
+  /* COMMENTED: list filter reset (list section)
   clearFilters(true);
+  */
 
+  /* COMMENTED: update items section heading (list section)
   $('.items-head').text(title + ' - Related Items');
+  */
   $('header.top-header details').removeAttr('open');
   document.title = title + " - " + header;
   $('article.' + slug + ' h2').trigger('focus');
@@ -155,9 +161,13 @@ function pageChangeIndex() {
   $('figure.hero').hide();
 
   // Items are independent → always show all
+  /* COMMENTED: list filter reset (list section)
   clearFilters(true);
+  */
 
+  /* COMMENTED: update items section heading (list section)
   $('.items-head').text(title + ' - Related Items');
+  */
   $('header.top-header details').removeAttr('open');
   document.title = title + " - " + header;
 
@@ -173,7 +183,11 @@ function openPageFromQuery() {
     $('#pages-container article').hide();
     $('article.'+ openPage).show();
     const title = $('article.'+ openPage +' h2').text();
+
+    /* COMMENTED: update items section heading (list section)
     $('.items-head').text(title + ' - Related Items');
+    */
+
     $('article.'+ openPage +' h2').trigger('focus');
     document.title = title + " - " + header;
 
@@ -184,7 +198,9 @@ function openPageFromQuery() {
     $('#intro').attr('hidden', '');
 
     // Items are independent → always show all
+    /* COMMENTED: list filter reset (list section)
     clearFilters(true);
+    */
   } else {
     homeOpen();
   }
@@ -192,14 +208,20 @@ function openPageFromQuery() {
 
 function homeOpen() {
   const firstPageHead = $('#pages-container article:nth-child(1) h2').text();
+
+  /* COMMENTED: update items section heading on home (list section)
   $('.items-head').text(firstPageHead + ' - Related Items');
+  */
+
   $('figure.hero').show();
   $('#intro').attr('hidden','');         // hide intro text (keep hero)
   $('#pages-container article').hide();
   $('#pages-container article:first').show();
 
   // Items are independent → always show all
+  /* COMMENTED: list filter reset (list section)
   clearFilters(true);
+  */
 }
 
 /* ---------- site/pages renderer ---------- */
@@ -371,6 +393,14 @@ function modalBuild(row){
 
 /* ---------- items table (independent of pages) ---------- */
 function itemsDataTable(itemsJsonData) {
+   const hasItems = Array.isArray(itemsJsonData?.rows) &&
+                   itemsJsonData.rows.some(r => r && r.c && r.c.some(cell => cell && cell.v != null && String(cell.v).trim() !== ''));
+
+  if (!hasItems) {
+    $('#collection').hide();   // nothing to show
+  } else {
+    $('#collection').show();   // we have at least one item
+  }
   // No initial page-based preset; show everything
   const initialSearch = { columns: [0,1,2,3,4,7,10,11,12,13,14,15,16,17] };
 
@@ -419,8 +449,10 @@ function itemsDataTable(itemsJsonData) {
 
       // "Show All" button clears everything
       $('.show-all').off('click').on('click', function(){
+        /* COMMENTED: list filter reset + heading update (list section)
         clearFilters(false);                 // keep panel state
         $('.items-head').text('All Items');
+        */
       });
 
       // hero → modal by ID
@@ -448,7 +480,11 @@ function itemsDataTable(itemsJsonData) {
         });
       $filter.append($toggle);
 
+      /* COMMENTED: force-show of items section (list section)
       $('#pages-container, #collection').show();
+      */
+      $('#pages-container').show();
+
       $('main').attr('aria-busy','false');
     }
   });
