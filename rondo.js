@@ -13,7 +13,7 @@ var overrideSource = spreadsheetID;
    true  -> Google Sheets (Visualization API)
    false -> Local Excel file (rondo.xlsx) using XLSX
 */
-var remote = true;
+var remote = false;
 
 var itemsTable;
 var openPage;
@@ -506,6 +506,26 @@ function itemsDataTable(itemsJsonData) {
         */
       });
 
+      //figure
+        $('#pages-container figure.include-item').each(function( i ) {
+        var thisFigure = $(this);
+        var thisItem = $(this).attr('item');
+         api.rows().every(function () {
+          var row = this.data();
+          if (row?.c?.[9]?.v == thisItem) {
+             if (row.c[8]) {
+              thisFigure.html('<img src="'+row.c[8].v+'" alt="'+row.c[0].v+'"/><figcaption>'+row.c[0].v+'</figcaption>');
+            }
+            else if (row.c[5]) {
+                thisFigure.html('<img src="'+row.c[5].v+'" alt="'+row.c[0].v+'"/><figcaption>'+row.c[0].v+'</figcaption>');
+            };
+            thisFigure.on('click', function() {
+              modalBuild(row);
+            });
+            }
+          });
+        });
+      
       // hero → modal by ID
       var heroFigure = $('.hero').attr('item');
       if (heroFigure) {
