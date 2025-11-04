@@ -212,14 +212,7 @@ function pageChangeIndex() {
   itemsTable.search('').searchBuilder.rebuild(storedSearch).draw();
   $('.items-head').text(title + ' - Related Items');
 
-  // Items are independent → always show all
-  /* COMMENTED: list filter reset (list section)
-  clearFilters(true);
-  */
 
-  /* COMMENTED: update items section heading (list section)
-  $('.items-head').text(title + ' - Related Items');
-  */
   $('header.top-header details').removeAttr('open');
   document.title = title + " - " + header;
 
@@ -236,9 +229,6 @@ function openPageFromQuery() {
     $('article.'+ openPage).show();
     const title = $('article.'+ openPage +' h2').text();
 
-    /* COMMENTED: update items section heading (list section)
-    $('.items-head').text(title + ' - Related Items');
-    */
 
     $('article.'+ openPage +' h2').trigger('focus');
     document.title = title + " - " + header;
@@ -265,19 +255,13 @@ function openPageFromQuery() {
 function homeOpen() {
   const firstPageHead = $('#pages-container article:nth-child(1) h2').text();
 
-  /* COMMENTED: update items section heading on home (list section)
-  $('.items-head').text(firstPageHead + ' - Related Items');
-  */
+
 
   $('figure.hero').show();
   $('#intro').attr('hidden','');         // hide intro text (keep hero)
   $('#pages-container article').hide();
   $('#pages-container article:first').show();
 
-  // Items are independent → always show all
-  /* COMMENTED: list filter reset (list section)
-  clearFilters(true);
-  */
 }
 
 /* ---------- site/pages renderer ---------- */
@@ -522,10 +506,8 @@ function itemsDataTable(itemsJsonData) {
 
       // "Show All" button clears everything
       $('.show-all').off('click').on('click', function(){
-        /* COMMENTED: list filter reset + heading update (list section)
-        clearFilters(false);                 // keep panel state
+        itemsTable.search('').searchBuilder.rebuild().draw();
         $('.items-head').text('All Items');
-        */
       });
 
       //figure
