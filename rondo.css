@@ -29,7 +29,7 @@ article {
 }
 
 #pages-container article header {
-  padding-top:120px;
+
 }
 
 @media (max-width: 991px){
@@ -211,7 +211,7 @@ button.next-page {
   margin: 0;
 }
 /* Optional: images inside page body look neat */
-#pages-container article img{
+#pages-container article figure{
   max-width: 100%;
   height: auto;
   border-radius: 10px;

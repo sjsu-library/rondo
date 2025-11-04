@@ -13,12 +13,13 @@ var overrideSource = spreadsheetID;
    true  -> Google Sheets (Visualization API)
    false -> Local Excel file (rondo.xlsx) using XLSX
 */
-var remote = false;
+var remote = true;
 
 var itemsTable;
 var openPage;
 var header = document.title;
 var subhead = "";
+var homeQuery = "home";
 var markdown = true;
 const md = markdownit({ html: true, linkify: true, typographer: true });
 
@@ -76,8 +77,6 @@ $(document).ready(function () {
 
   window.addEventListener("popstate", () => { getQueries(); openPageFromQuery(); });
 
-  // Tools dialog
-  $('.tools').on('click', function (e) { e.preventDefault(); $('.rondo-tools').attr('open', ''); });
   // Dialog closers
   $('dialog a.close').on('click', function(){
     document.querySelectorAll('dialog').forEach(d=> d.close ? d.close() : d.removeAttribute('open'));
@@ -98,7 +97,6 @@ $(document).ready(function () {
       ).send(function (res1) {
         if (res1.isError()) { console.log('Site error:', res1.getMessage(), res1.getDetailedMessage()); return; }
         const siteJson = JSON.parse(res1.getDataTable().toJSON());
-        $('.tools-site').text(JSON.stringify(siteJson));
         siteConfig(siteJson);
 
         // Pages
@@ -107,7 +105,6 @@ $(document).ready(function () {
         ).send(function (res2) {
           if (res2.isError()) { console.log('Pages error:', res2.getMessage(), res2.getDetailedMessage()); return; }
           const pagesJson = JSON.parse(res2.getDataTable().toJSON());
-          $('.tools-pages').text(JSON.stringify(pagesJson));
           pages(pagesJson);
 
           // Items
@@ -116,7 +113,6 @@ $(document).ready(function () {
           ).send(function (res3) {
             if (res3.isError()) { console.log('Items error:', res3.getMessage(), res3.getDetailedMessage()); return; }
             const itemsJson = JSON.parse(res3.getDataTable().toJSON());
-            $('.tools-items').text(JSON.stringify(itemsJson));
             itemsDataTable(itemsJson);
           });
         });
@@ -174,16 +170,17 @@ function pageChange() {
   $('#pages-container article').hide();
   $('article.'+slug).show();
   $('#intro').attr('hidden','');
-  $('figure.hero').hide();
-
-  // Items are independent → always show all
-  /* COMMENTED: list filter reset (list section)
-  clearFilters(true);
-  */
-
-  /* COMMENTED: update items section heading (list section)
+  if ($('article.' + slug).is(':first-child')) {
+          document.title = header;
+          $('figure.hero').show();
+        }
+        else {
+          $('figure.hero').hide();
+  }
+  var storedSearch = { "criteria": [ { "condition": "contains", "data": "Keywords", "type": "string", "value": [ query ] } ], "logic": "AND" };
+  itemsTable.search('').searchBuilder.rebuild(storedSearch).draw();
   $('.items-head').text(title + ' - Related Items');
-  */
+
   $('header.top-header details').removeAttr('open');
   document.title = title + " - " + header;
   $('article.' + slug + ' h2').trigger('focus');
@@ -197,13 +194,23 @@ function pageChange() {
 function pageChangeIndex() {
   const target = $(event.target).attr('targetpage');
   const $art   = $("article[pageindex='" + target + "']");
+  var query = $art.attr('pagequery');
   const slug   = $art.attr('pageslug');
   const title  = $art.find('h2').text();
 
   $('#pages-container article').hide();
   $('article.'+slug).show();
   $('#intro').attr('hidden','');
-  $('figure.hero').hide();
+  if ($('article.' + slug).is(':first-child')) {
+          document.title = header;
+          $('figure.hero').show();
+        }
+        else {
+          $('figure.hero').hide();
+  }
+  var storedSearch = { "criteria": [ { "condition": "contains", "data": "Keywords", "type": "string", "value": [ query ] } ], "logic": "AND" };
+  itemsTable.search('').searchBuilder.rebuild(storedSearch).draw();
+  $('.items-head').text(title + ' - Related Items');
 
   // Items are independent → always show all
   /* COMMENTED: list filter reset (list section)
@@ -239,13 +246,17 @@ function openPageFromQuery() {
     const headerH = $('header.top-header').outerHeight() || 0;
     $('html, body').stop(true).animate({ scrollTop: $('article.' + openPage).offset().top - headerH - 12 }, 800);
 
-    $('figure.hero').hide();
+    $('#intro').attr('hidden','');
+    if ($('article.' + openPage).is(':first-child')) {
+          document.title = header;
+          $('figure.hero').show();
+        }
+        else {
+          $('figure.hero').hide();
+    }
     $('#intro').attr('hidden', '');
 
-    // Items are independent → always show all
-    /* COMMENTED: list filter reset (list section)
-    clearFilters(true);
-    */
+    
   } else {
     homeOpen();
   }
@@ -448,8 +459,19 @@ function itemsDataTable(itemsJsonData) {
   } else {
     $('#collection').show();   // we have at least one item
   }
-  // No initial page-based preset; show everything
-  const initialSearch = { columns: [0,1,2,3,4,7,10,11,12,13,14,15,16,17] };
+
+    //First set the initial search for the table. if there is a page in the query, the slug of that page becomes the initial search
+    var initialSearch = {"columns": [0,1,2,3,4,7,10,11,12,13,14,15,16,17]};
+    if (openPage) {
+      var thisPageQuery = $('article.'+openPage).attr('pagequery');
+      if (thisPageQuery) {
+          initialSearch = {"preDefined": { "criteria": [ { "condition": "contains", "data": "Keywords", "type": "string", "value": [ thisPageQuery ] } ], "logic": "AND" }, "columns": [0,1,2,3,4,7,10,11,12,13,14,15,16,17]};
+    }
+  }
+  //If there's no page, use the slug from the homepage
+  else if (homeQuery) {
+    initialSearch = {"preDefined": { "criteria": [ { "condition": "contains", "data": "Keywords", "type": "string", "value": [ homeQuery ] } ], "logic": "AND" }, "columns": [0,1,2,3,4,7,10,11,12,13,14,15,16,17]};
+  };
 
   itemsTable = $('#items').DataTable({
     data: itemsJsonData.rows,
