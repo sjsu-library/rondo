@@ -1,5 +1,6 @@
 body {
   padding-top:100px;
+  /* background-color: #F5E1C8; */
 }
 
 body header {
@@ -28,7 +29,7 @@ article {
 }
 
 #pages-container article header {
-  padding-top:120px;
+
 }
 
 @media (max-width: 991px){
@@ -40,12 +41,15 @@ article {
 header.top-header {
   position: fixed;
   top:0;
+  z-index: 1100;
+  /* background-color: #E3C9A3; */
   background-color: #fff;
   padding-top:10px;
   padding-bottom: 10px;
   -webkit-box-shadow: 0px 4px 16px 8px rgba(0,0,0,0.1);
   -moz-box-shadow: 0px 4px 16px 8px rgba(0,0,0,0.1);
   box-shadow: 0px 4px 16px 8px rgba(0,0,0,0.1);
+  
 }
 
 div.top {
@@ -63,7 +67,7 @@ hgroup *, .include-item, #collection tr {
 
 .header-image {
   max-width: 50%;
-  max-height: 80px;
+  max-height: 100px;
 }
 
 header.top nav {
@@ -83,7 +87,8 @@ ul#pages {
   display: block;
 }
 figure.hero {
-  display:none;
+  display:none
+  ;
 }
 
 .hero figcaption {
@@ -154,6 +159,7 @@ button.next-page {
   flex-wrap: wrap;
   margin:1%;
   background-color: #ffffff;
+  /* border: 1px solid #000000; */
   border: 1px solid #aaaaaa;
   padding: 10px;
   border-radius: 4px;
@@ -182,3 +188,52 @@ button.next-page {
   padding:20px;
   text-align: center;
 }
+
+/* === Intro section (homepage only) === */
+#intro[hidden] { display: none !important; }
+#intro {
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+}
+#intro #home-article{
+  background: #FFF6EA;
+  border: 1px solid #E2D2B8;
+  border-radius: 16px;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+}
+#intro #home-article header{
+  border-bottom: 1px solid #E2D2B8;
+  padding-bottom: .5rem;
+  margin-bottom: 1rem;
+}
+#intro #home-article h2{
+  margin: 0;
+}
+/* Optional: images inside page body look neat */
+#pages-container article figure{
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+}
+
+/* Dark mode harmony */
+@media (prefers-color-scheme: dark){
+  #pages-container article{
+    background: var(--card, #302419);
+    border-color: var(--border, #473622);
+  }
+  #pages-container article > header,
+  #pages-container article > footer{
+    background: color-mix(in oklab, var(--card, #302419) 80%, #000);
+    border-color: var(--border, #473622);
+  }
+  #pages-container article > :not(header):not(footer){
+    background: #1f1812;
+    color: var(--text, #F5EDE3);
+  }
+}
+dialog { z-index: 2001; }              /* keep dialog above the fixed header */
+dialog::backdrop { background: rgba(0,0,0,.35); }
+

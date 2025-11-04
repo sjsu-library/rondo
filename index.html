@@ -11,7 +11,9 @@
     <script src="https://cdn.datatables.net/v/dt/dt-1.13.8/sb-1.6.0/datatables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
     <script src="rondo.js"></script>
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <!-- SheetJS (XLSX) -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <link rel="shortcut icon" type="image/x-icon" href="images/logo-dd.png">
 
   </head>
 
@@ -38,6 +40,11 @@
     </header>
     <figure class='container-fluid hero'>
     </figure>
+    <!-- Home Intro (shows only on the homepage) -->
+    <section id="intro" hidden>
+      <article id="home-article">
+      </article>
+    </section>
 
 
     <main class="container" aria-busy="true">
@@ -115,42 +122,9 @@
     </article>
   </dialog>
 
-  <dialog class = "rondo-tools">
-    <article>
-      <header>
-        <a href="#close" aria-label="Close" class="close"></a>
-        <h3>Rondo Tools</h3>
-      <header>
-      <div class="localizing">
-        <h5>Localizing Tools</h5>
-        <p>Tools for localizing your Rondo site by disconnecting it from Google Sheets</p>
-        <p>
-          <details>
-            <summary>Site Configuration</summary>
-            <div class="tools-site">
-            </div>
-          </details>
-          <details>
-            <summary>Pages</summary>
-            <div class="tools-pages">
-            </div>
-          </details>
-          <details>
-            <summary>Items</summary>
-            <div class="tools-items">
-            </div>
-          </details>
-        </p>
-      </div>
-    </article>
-  </dialog>
 
   <footer class="container">
       <small>Powered by Rondo</small>
-        <br>
-      <small><a href="#" class="tools">Rondo Tools</a></small>
-  </footer>
-
   </body>
 
 <html>
