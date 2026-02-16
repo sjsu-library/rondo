@@ -10,7 +10,7 @@ originalID = spreadsheetID; //store the original ID for later checking
 overrideSource = spreadsheetID; //this variable will be overwritten later if there is a source in the URL
 
 //remote variable - change this to run your site on loal json tiles - see Rondo Tools for more information
-var remote = false;
+var remote = true;
 
 //other variables - none of these necessarily need to be changed
 var itemsTable;
